@@ -1,0 +1,47 @@
+def testar_prompt(prompt_texto, titulo):
+    print(f"\n--- {titulo} ---")
+    print(f"Prompt: \"{prompt_texto}\"")
+    
+    # Envia a solicitação para o modelo
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt_texto,
+    )
+    
+    # Exibe a resposta gerada
+    print(f"\nResposta:\n{response.text.strip()}\n")
+    
+    # Obtém a contagem de tokens do objeto usage_metadata
+    tokens_entrada = response.usage_metadata.prompt_token_count
+    tokens_saida = response.usage_metadata.candidates_token_count
+    tokens_total = response.usage_metadata.total_token_count
+    
+    print(f"Tokens de Entrada: {tokens_entrada}")
+    print(f"Tokens de Saída:   {tokens_saida}")
+    print(f"Total de Tokens:   {tokens_total}")
+    
+    return tokens_entrada, tokens_saida, tokens_total
+
+# 1. Teste com Prompt Curto
+p1_in, p1_out, p1_total = testar_prompt(
+    prompt_texto="O que é inteligência artificial?",
+    titulo="TESTE 1: Prompt Curto"
+)
+
+# 2. Teste com Prompt Detalhado
+p2_in, p2_out, p2_total = testar_prompt(
+    prompt_texto="Atue como um mentor especialista em tecnologia. Explique o conceito de inteligência artificial para um estudante do ensino médio, usando uma analogia simples do dia a dia, destacando a diferença entre aprendizado de máquina e programação tradicional, e limitando a resposta a dois parágrafos.",
+    titulo="TESTE 2: Prompt Detalhado"
+)
+
+# 3. Comparação dos Resultados
+print("\n" + "="*40)
+print("COMPARAÇÃO DE CONSUMO DE TOKENS")
+print("="*40)
+print(f"Teste 1 (Curto):     {p1_total} tokens no total (Entrada: {p1_in} | Saída: {p1_out})")
+print(f"Teste 2 (Detalhado): {p2_total} tokens no total (Entrada: {p2_in} | Saída: {p2_out})")
+
+if p2_total > p1_total:
+    print(f"\nResultado: O Teste 2 (Prompt Detalhado) consumiu {p2_total - p1_total} tokens a mais.")
+else:
+    print(f"\nResultado: O Teste 1 (Prompt Curto) consumiu {p1_total - p2_total} tokens a mais.")
